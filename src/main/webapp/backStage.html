@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>后台界面</title>
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="dist/js/jquery-1.11.3.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="dist/js/bootstrap.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--从外部中插入滑动效果-->
+    <link rel="stylesheet" type="text/css" href="css/slide.css">
+	 <style type="text/css">
+
+         html{
+             height: 100%;
+         }
+		 body {
+                margin: 0;
+                padding: 0;
+				min-height: 100vh;
+                height: 100%;
+            	background-color: darkgrey;
+		}
+         /*标题*/
+         .title{
+             width: 100%;
+             height: 8%;
+             text-align: center;
+             background-color: #191919;
+             color: white;
+             font-size: 16px;
+         }
+        /* 排序*/
+         .second-div{
+             width: 100%;
+             height: 7%;
+         }
+         .second-div #sort{
+             margin-left: 12%;
+             margin-top: 1%;
+         }
+         /*导航栏*/
+         .navigation{
+             float: left;
+             margin-top: 30px;
+             height: 35%;
+             width: 12%;
+         }
+         .navigation input{
+             height: 50px;
+             width: 100%;
+             background-color: inherit;
+             border-style: solid;
+             border-width: 1px;
+             border-color: white;
+         }
+        /* 主要内容*/
+         .main{
+             float: right;
+             position: relative;
+             border-style: solid;
+             border-color: snow;
+             margin-top: 0;
+             margin-left: 0;
+             width:88%;
+             height: 85%;
+             background-color: snow;
+             padding: 25px 20px;
+         }
+         /*商品仓库*/
+         .main .product{
+                height: 85%;
+                overflow: auto;
+                border-width: 3px;
+                border-style:outset;
+                border-color: skyblue;
+                font-family: Microsoft JhengHei;
+         }
+        /* 表格大小*/
+         .main .product tr{
+             border-bottom-style: solid;
+             border-bottom-width: 2px;
+             border-bottom-color: #F5F5F5;
+         }
+         .main .product td{
+             height: 40px;
+             width: 120px;
+         }
+		 .main .product input{
+             font-size:20px;
+             border-radius: 6px;
+             border-style: none;
+             background-color: snow;
+		}
+         /*操作按钮*/
+        .main .product .button{
+            color: cornflowerblue;
+        }
+		/*控制订单信息*/
+         .orders{
+             position: absolute;
+             bottom: 30px;
+             right: 250px;
+             width: 300px;
+             height: 50px;
+             float: right;
+             text-align: center;
+             border: 3px solid azure;
+             font-size: 20px;
+         }
+         .orders a{
+             display:inline-block;
+         }
+         /*前往主页按钮*/
+         .go{
+             position: absolute;
+             top:70px;
+             right: 120px;
+             font-size: 20px;
+         }
+         /*控制增加商品窗口*/
+         .add{
+             display: none;
+             margin: 50px 25%;
+         }
+         .add iframe{
+             margin: 0 auto;
+             border-width: 4px;
+             height: 450px;
+             width: 650px;
+         }
+		
+	</style> 
+</head>
+<body>
+         <div class="title"><br>Geekerinn后台管理界面</div>
+         <div class="second-div">
+             <div class="btn-group" id="sort">
+                <button class="btn btn-default" type="button" onclick="sortByNormal()">默认</button>
+                <button class="btn btn-default" type="button" onclick="sortByPrice()">价格 ↑</button>
+                <button class="btn btn-default" type="button" onclick="sortBySales()">售量 ↓</button>
+             </div>
+             <a href="main.html" class="go">前往主页</a>
+         </div>
+         <div class="navigation">
+            <input type="button" value="商品详情" id="btn1" onclick="main()" style="background-color: skyblue"><br>
+            <input type="button" value="增加商品" id="btn2" onclick="add()">
+         </div>
+         <div class="main">
+             <div id="product" class="product" >
+            	
+             </div>
+             <div class="add" id="add" >
+                 <iframe src="addProduct.html"></iframe>
+             </div>
+             <div id="orders" class="orders">
+
+             </div>
+         </div>
+ <script type="text/javascript">
+
+     //定义排序方式
+     var sort = "";
+     //普通排序
+     function sortByNormal(){
+         sort = "";
+         showRepository();
+     }
+     //按价格排序
+     function sortByPrice() {
+         sort = "price";
+         showRepository();
+     }
+     //按售量排序
+     function sortBySales() {
+         sort = "sales";
+         showRepository();
+     }
+    //展示商品仓库列表
+    showRepository();
+    function showRepository(){
+        $.ajax({
+            url : "/chapter/getProducts?sort="+sort,
+            type : "post",
+            //发送的数据
+            data :"",
+            contentType : "application/json;charset=UTF-8",
+            dataType : "json",
+            success : function(data){
+                // 要是验证信息通过则跳转到新的页面
+                var html="<table style='font-family: Microsoft JhengHei;font-size: 25px'><tr ><td style='width:213px'>商品名</td><td style='width:213px'>价格</td><td>售量</td></tr></table>";
+                for(var i=0;i<data.length;i++){
+                    html+=  "<form method='post' action='/chapter/client/deleteProduct' ><table><tr>" +
+                            "<td><input type='text' readonly name='name' value='"+data[i].name+"'></td>"+
+                            "<td><input type='text' readonly name='price' value='"+data[i].price+"'></td>"+
+                            "<td><input type='text' readonly name='sales' value='"+data[i].sales+"'></td>"+
+                            "<td><input type='hidden' readonly name='img' value='"+data[i].img+"'></td>"+
+                            "<td><input type='hidden' readonly name='id' value='"+data[i].id+"'></td>"+
+                            "<td><input type='submit'  value='查看详情' class='button' formaction='/chapter/getProduct'> </td>"+
+                            "<td><input type='submit'  value='修改' class='button' formaction='/chapter/client/updateProduct'> </td>"+
+                            "<td><input type='submit'  value='删除' class='button' onclick='tip()'> </td>"+
+                            "</tr></table></form>";
+                                                  
+                }
+          		document.getElementById("product").innerHTML=html;
+
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+
+    //显示订单信息
+    checkOrder();
+    function checkOrder(){
+        $.ajax({
+            url : "/chapter/client/checkOrders",
+            type : "post",
+            //发送的数据
+            data :"",
+            contentType : "application/json;charset=UTF-8",
+            dataType : "json",
+            success : function(data){
+                // 
+                var html= "";
+                if(data>0){
+                	alert("你有未处理订单");
+                	html+= "<a href='order.html' id='order'>订单管理(未处理订单数:"+data+")</a>";
+                	setTime();
+                }
+                else{
+                	html+= "<a href='order.html'>订单管理</a>";
+                }
+                document.getElementById("orders").innerHTML=html;
+				  
+            }
+        });
+    }
+</script>
+
+      
+<script>
+    //删除前确认一下
+    function  tip(){
+        alert("删除成功");
+    }
+    //设置定时器
+    function setTime() {
+
+        setInterval("changeNews()",500);
+    }
+    var z=1;
+    //设置未读信息闪烁功能
+    function changeNews() {
+        z++;
+        if(z%2==0)
+            document.getElementById("order").style.display="none";
+        else
+            document.getElementById("order").style.display="inline-block";
+    }
+    //导航栏切换
+
+    function add() {
+        //切换到添加商品页面
+        document.getElementById("add").style.display = "block" ;
+        document.getElementById("product").style.display = "none" ;
+        //添加商品导航键变成 选中状况蓝色
+        document.getElementById("btn1").style.backgroundColor = "inherit" ;
+        document.getElementById("btn2").style.backgroundColor = "skyblue" ;
+    }
+
+    function main() {
+        //切换到主页面
+        document.getElementById("add").style.display = "none" ;
+        document.getElementById("product").style.display = "block" ;
+        //主页面导航键变成 选中状况蓝色
+        document.getElementById("btn1").style.backgroundColor = "skyblue" ;
+        document.getElementById("btn2").style.backgroundColor = "inherit" ;
+    }
+</script>
+</body>
+</html>

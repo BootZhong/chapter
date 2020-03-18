@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订单</title>
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="dist/js/jquery-1.11.3.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="dist/js/bootstrap.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+	
+	
+</head>
+
+<script>
+    // 再次确认
+    function check(){
+
+        var sure = prompt("确认已经发货请输入ok","");
+        if(sure=="ok"){
+            alert("发货成功");
+            return true;
+        }
+        else{
+            alert("输出错误，请重新提交");
+            return false;
+        }
+    }
+</script>
+<body>
+
+
+        <div class="container">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>
+                                收货人
+                            </th>
+                            <th>
+                                商品
+                            </th>
+                            <th>
+                                收货地址
+                            </th>
+                            <th>
+                                状态
+                            </th>
+                            <th>
+                                               
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <div id="orders">
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+</body>
+
+<script type="text/javascript">
+
+    //显示全部订单
+    getOrders();
+    function getOrders(){
+        $.ajax({
+            url : "/chapter/client/getOrders",
+            type : "post",
+            //发送的数据
+            data :"",
+            contentType : "application/json;charset=UTF-8",
+            dataType : "json",
+            success : function(data){
+                
+                var html="";
+                //没有发货的才有发货按钮
+                for (var i=0;i<data.length;i++){               	
+                	if(data[i].state==0){
+                		data[i].state = "未发货" ;
+        
+                		html+= "<form method='post' action='/chapter/client/updateOrders' onsubmit='return check()'>"+
+                		"<table class='table'><tr class='success'>" +
+                        "<td><input type='text' readonly name='name' value='"+data[i].name+"'></td>"+
+                        "<td><input type='text' readonly name='productName' value='"+data[i].productName+"'></td>"+
+                        "<td><input type='text' readonly name='address' value='"+data[i].address+"'></td>"+
+                        "<td><input type='text' readonly disabled='disabled' value='"+data[i].state+"'></td>"+
+                        "<td><input type='hidden' readonly name='id' value='"+data[i].id+"'></td>"+
+                        "<td><input type='submit'  value='发货'> </td>"+
+                       "</tr></table></form>";        
+                	}
+                		         	
+                	if(data[i].state==1){
+                		data[i].state = "已发货";
+                		html+= "<form method='post' action='/chapter/client/updateOrders' onsubmit='return check()'><table class='table'><tr>" +
+                        "<td><input type='text' readonly name='name' value='"+data[i].name+"'></td>"+
+                        "<td><input type='text' readonly name='productName' value='"+data[i].productName+"'></td>"+
+                        "<td><input type='text' readonly name='address' value='"+data[i].address+"'></td>"+
+                        "<td><input type='text' readonly disabled='disabled' value='"+data[i].state+"'></td>"+
+                        "<td><input type='hidden' readonly name='id' value='"+data[i].id+"'></td>"+
+                        "<td><input type='submit'  value='已发' disabled='disabled'> </td>"+
+                       "</tr></table></form>";        
+                	}	
+                		
+                          
+                }
+                document.getElementById("orders").innerHTML=html;
+            }
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- 映射文件 -->
+<mapper namespace="mapperFactory.Mapper">
+<!-- 操作User表 -->
+  <select id="findUser" parameterType="po.User" resultType="po.User">
+    select *from user where name=#{name}
+  </select>
+  <select id="findAllUser"  resultType="po.User">
+    select *from user 
+  </select>
+  <insert id="addUser" parameterType="po.User">
+  	insert into user(name, password,balance) value(#{name},#{password},10000);
+  </insert>
+  <update id="updateUser" parameterType="po.User" >
+  	update user set balance=#{balance}  where name=#{name}
+  </update>
+  
+<!-- 操作UserBS表 -->
+  <select id="findUserBS" parameterType="po.UserBS" resultType="po.UserBS">
+    select *from userBS where name=#{name}
+  </select>
+  <select id="findAllUserBS"  resultType="po.UserBS">
+    select *from userBS 
+  </select>
+  <insert id="addUserBS" parameterType="po.UserBS">
+  	insert into userBS(name, password) value(#{name},#{password});
+  </insert>
+  
+<!-- 操作comment表 -->
+  <select id="findComment" parameterType="po.Product" resultType="po.Comment">
+  	select *from comment where productName=#{name}
+  </select>
+  <insert id="addComment" parameterType="po.Comment">
+  	insert into comment(name,productName, comment) value(#{name},#{productName},#{comment});
+  </insert>
+  
+<!-- 操作Product表 -->
+  <select id="findTheProduct" parameterType="po.Product" resultType="po.Product">
+  	 select *from product where name = #{name}
+  </select>
+  <select id="findProduct" parameterType="po.Product" resultType="po.Product">
+  	 select *from product where name like "%${name}%"
+  </select>
+  <select id="findAllProduct" resultType="po.Product">
+  	select *from product
+  </select>
+  <insert id="addProduct" parameterType="po.Product">
+  	insert into product(name,img,price,sales) value(#{name},#{img},#{price},0)
+  </insert>
+  <update id="updateProduct" parameterType="po.Product" >
+  	update product set name=#{name}, price=#{price}  where id=#{id}
+  </update>
+  <update id="updateProductSales" parameterType="po.Orders">
+  	update product set sales=sales+1  where name=#{name}
+  </update>
+  <delete id="deleteProduct" parameterType="po.Product">
+  	delete from product where name=#{name}
+  </delete>
+  
+  <!-- 操作订单表-->
+  <select id="findOrder" parameterType="po.Orders" resultType="po.Orders">
+  	select *from orders where id = #{id}
+  </select>
+  <select id="findUserOrders" parameterType="po.Orders" resultType="po.Orders">
+  	select *from orders where name = #{name}
+  </select>
+  <select id="findSomeOrders" parameterType="po.Orders" resultType="po.Orders">
+  	select *from orders where state = #{state}
+  </select>
+  <select id="findAllOrders" parameterType="po.Orders" resultType="po.Orders">
+  	select *from orders 
+  </select>
+  <insert id="addOrder" parameterType="po.Orders">
+  	insert into orders(name,productName,address,state) value(#{name},#{productName},#{address},0)
+  </insert>
+  <update id="updateOrder" parameterType="po.Orders">
+  	update orders set state=#{state}  where id=#{id}
+  </update>  
+  
+</mapper>

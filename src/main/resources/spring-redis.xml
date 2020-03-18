@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+						http://www.springframework.org/schema/context
+	                    http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	                    http://www.springframework.org/schema/mvc
+           				http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<!--配置redis连接池信息-->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<!--最大连接数-->
+		<property name="maxTotal" value="50"></property>
+		<!--最大空闲数-->
+		<property name="maxIdle" value="5"></property>
+	</bean>
+	<!--spring整合redis-->
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<!--指定服务器地址-->
+		<property name="hostName" value="localhost"></property>
+		<!--端口号-->
+		<property name="port" value="6379"></property>
+		<!--连接超速时间-->
+		<property name="timeout" value="2000"></property>
+		<!--密码-->
+		<!--<property name="password" value="-&#45;&#45;"></property>-->
+		<!--自定义连接池配置-->
+		<property name="poolConfig" ref="jedisPoolConfig"></property>
+	</bean>
+	<!--redis template-->
+	<bean name="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="jedisConnectionFactory"></property>
+		<!--String数据   key反序列化-->
+		<property name="keySerializer" >
+			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
+		</property>
+		<!--String数据   value反序列化-->
+		<property name="valueSerializer">
+			<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+		</property>
+		<!--hashMap数据   key反序列化-->
+		<property name="hashKeySerializer">
+			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<!--hashMap数据   value反序列化-->
+		<property name="hashValueSerializer" >
+			<bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer" />
+		</property>
+	</bean>
+	
+</beans>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>主界面</title>
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="dist/js/jquery-1.11.3.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="dist/js/bootstrap.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--从外部中插入滑动效果-->
+    <link rel="stylesheet" type="text/css" href="css/slide.css">
+    <!--图标库-->
+    <link href="https://cdn.bootcss.com/font-awesome/5.8.0/css/all.css" rel="stylesheet" />
+    <style>
+        body {
+            min-height: 100vh;
+            /*background-color: snow;*/
+           /* background-image: linear-gradient(
+                    45deg,
+                    #9fbaa8,
+                    #31354c
+            ); 设置颜色渐变 方向(0deg垂直向上) 起点颜色 终点颜色*/
+        }
+        /*控制搜索框*/
+        .search{
+            position:relative;
+            margin: 20px auto;
+            width: 100%;
+            height: 50px;
+            text-align: center;
+        }
+        .search input{
+            font: 14px Arial, Helvetica, sans-serif;
+            border: 1px solid #DADADA;
+            border-radius: 6px;
+            color: #888;
+            width: 600px;
+            height: 50px;
+            box-shadow: inset 0px 1px 4px #ECECEC;
+            -moz-box-shadow: inset 0px 1px 4px #ECECEC;
+            -webkit-box-shadow: inset 0px 1px 4px #ECECEC;
+        }
+
+        /*控制个人信息的弹出*/
+         .user ul{
+             position: absolute;/*消除弹出时对其他布局的影响*/
+             border-style: ridge;
+             border-width: 1px;
+             border-top-style: none;
+             border-color: snow;
+             border-radius: 6px;
+             background-color: snow;
+             display: none;
+
+        }
+        .user:hover ul{
+            display: block;
+            font-size: 13px;
+        }
+        /*商品排序*/
+        #sort{
+            margin-left: 5%;
+            width: 95%;
+            height: 50px;
+            background-color: #F5F5F5 ;
+            padding-top: 10px;
+            padding-left: 3%;
+        }
+        /*商品*/
+        .content{
+            margin: 70px auto;
+            width: 100%;
+            height: 100%;
+            font-size: 20px;
+            /*text-align: center;*/
+        }
+        .content table{
+            border-collapse: separate;
+            border-spacing:10px;
+            margin: 0px auto;
+        }
+        .content img{
+            width: 330px;
+            height: 300px;
+        }
+        .content td{
+            border-style: solid;
+            border-width: 2px;
+            border-color: white;
+        }
+        .content td:hover{
+            border-style: solid;
+            border-width: 2px;
+            border-color: red;
+        }
+    </style>
+</head>
+<body>
+<script>
+    //动态显示登陆情况
+    showStatus();
+    function showStatus(){
+        $.ajax({
+            url : "/chapter/getStatus",
+            type : "post",
+            // 发送的数据
+            data :"",
+            contentType : "application/json;charset=UTF-8",
+            dataType : "json",
+            success : function(data){
+            	
+            	//显示登陆 注册
+            	var html="";
+            	//个人信息中心
+            	var html2="";
+            	var html3="";
+				if(data.name==null){
+					html="<a href='login.html'>登录</a>" ;
+				}
+				else{
+					html= " <a href='/chapter/logout'>注销</a>" ;/* 用户 "+data.name+" 你好"  */
+
+                    html2+=   "<ul style='list-style-type:none'>"+
+                               "<li>用户名:"+data.name+"</li>"+
+                               "<li>密码:"+data.password+"</li>"+
+                               "<li>余额:"+data.balance+"</li>"+
+                              "</ul>" ;
+                    html3+=" <a href='/chapter/user.html?name='"+data.name+"'>个人中心</a>  " ;
+                    html3+=html2;
+				}
+				$("#status").html(html);
+                $("#user").html(html3);         
+            }
+
+        });
+    }
+</script>
+
+<script >
+    //直接运行showPost函数展现商品
+    showProduct();
+        var sort;
+    //恢复默认排序
+    function sortByNormal(){
+        sort=" ";
+        showProduct();
+    }
+    //按价格排序
+    function sortByPrice(){
+        sort="price";
+        showProduct();
+    }
+    //按销售量排序
+    function sortBySales(){
+        sort="sales";
+        showProduct();
+    }
+    function showProduct(){
+	    $.ajax({
+		    url : "/chapter/getProducts?sort="+sort,
+		    type : "post",
+		    // 发送的数据
+		    data :"",
+		    contentType : "application/json;charset=UTF-8",
+		    dataType : "json",
+		    success : function(data){
+			
+			    var html="";
+			    for (var i = 1; i <=data.length ; i++) {
+				    if(i==1) html+="<tr>";
+				    //通过服务端返回的商品数据展示商品的照片和名字，并在商品信息镶嵌链接
+				    html+="<td> <a href='getProduct?name="+data[i-1].name+"'><img src='"+data[i-1].img+"'></a></br>"+
+							"<h1 style='color:red'>￥"+data[i-1].price+"</h1>"+
+							"<a href='getProduct?name="+data[i-1].name+"'>"+data[i-1].name+"</a>"+
+					  "</td>";
+				    //一行四个商品
+				    if(i%4==0) html+="</tr> <tr>";
+                }
+			    html+="</tr>";
+			    $("#content").html(html);
+		    }
+		
+	    });
+    }
+</script>
+<!-- 滑动效果 -->
+<script>
+    window.onload = function(){
+        var oDiv = document.getElementById('div1');
+        var oUl = document.getElementById('ul1');
+        var speed = 2;//初始化速度
+
+        oUl.innerHTML += oUl.innerHTML;//使得一行的表格数翻倍形成溢出，使得一半的表格隐藏，从而产生滑动效果
+        /*var oLi= document.getElementsByTagName('li');//oli.length:数组的长度 即一行的格子数
+        console.log(oLi.length);*/
+        oUl.style.width = 8*360+'px';//定义一行的总宽度为多少
+        var oBtn1 = document.getElementById('btn1');
+        var oBtn2 = document.getElementById('btn2');
+        console.log(oUl.offsetLeft);//距离左边框的距离
+        console.log(oUl.offsetWidth);//宽度
+
+        function move(){
+            if(oUl.offsetLeft<-(oUl.offsetWidth/2)){//每当内容距离左边框距离小于-1440的时候，调用该函数重新滑动
+                //设置内容距离左边框的距离为0，即把四张照片隐藏在右边，然后慢慢往左滑动
+                oUl.style.left = 0;
+            }
+
+            if(oUl.offsetLeft > 0){//每当内容距离左边框距离大于0的时候，调用该函数
+                //设置内容距离左边框的距离为宽度的负一半，即把四张照片隐藏在左边，然后慢慢往右滑动
+                oUl.style.left = -(oUl.offsetWidth/2)+'px';
+                console.log(oUl.offsetLeft);
+            }
+            //通过表格距离左边框的变化，生成滑动效果
+            //speed为负值时，左边框距离一直变小，形成左滑动，但是滑动有终点，即内容全部滑出边框的时候 右滑动同理
+            oUl.style.left = oUl.offsetLeft + speed + 'px';
+        }
+        //控制向左滑动
+        oBtn1.addEventListener('click',function(){
+            speed = -2;
+        },false);
+        //控制向右滑动
+        oBtn2.addEventListener('click',function(){
+            speed = 2;
+        },false);
+
+        var timer = setInterval(move,30);//全局变量 ，保存返回的定时器
+
+        oDiv.addEventListener('mouseout', function () {
+            timer = setInterval(move,30);//鼠标移出增加定时器
+        },false);
+        oDiv.addEventListener('mousemove', function () {
+            clearInterval(timer);//鼠标移入清除定时器
+        },false);
+    }
+</script>
+<div class="container" style="background-color: #F5F5F5;width: 100%">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <ul class="nav nav-tabs" >
+                <li class="active">
+                    <a href="main.html">首页</a>
+                </li>
+                <li>
+                    <a href="backStage.html" target="_blank">后台管理</a>
+                </li>
+                <li id="user" class="user">
+
+                </li>
+                <li id="status">
+
+                </li>
+                <li class="dropdown pull-right">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">下拉<strong class="caret"></strong></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#">操作</a>
+                        </li>
+                        <li>
+                            <a href="#">设置栏目</a>
+                        </li>
+                        <li>
+                            <a href="#">更多设置</a>
+                        </li>
+                        <li class="divider">
+                        </li>
+                        <li>
+                            <a href="#">分割线</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="search">              	
+           	<input type="search"  id="go"  placeholder="请输入需要搜索的内容" >
+            <i class="fas fa-search" style="color: #31b0d5">搜索</i>
+    </div>
+</div>
+<div id="divz">
+    <input id="btn1" type="button" value="向左" hidden>
+    <input id="btn2" type="button" value="向右" hidden>
+    <div id="div1">
+        <ul id="ul1">
+            <li><a href="#"><img src="images/phone1.jpg"></a> </li>
+            <li><a href="#"><img src="images/g5.jpg"></a></li>
+            <li><a href="#"><img src="images/computer2.jpg"></a></li>
+            <li><a href="#"><img src="images/g2.jpg"></a></li>
+        </ul>
+    </div>
+</div>
+    <div class="content">
+        <div class="btn-group" id="sort">
+            <button class="btn btn-default" type="button" onclick="sortByNormal()">默认</button>
+            <button class="btn btn-default" type="button" onclick="sortByPrice()">价格 ↑</button>
+            <button class="btn btn-default" type="button" onclick="sortBySales()">售量 ↓</button>
+        </div>
+        <table  id="content">
+        </table>
+    </div>
+</body>
+<script>
+
+    document.getElementById("go").addEventListener("click",function(){
+        window.location.href="searchBox.html";
+    });
+</script>
+</html>

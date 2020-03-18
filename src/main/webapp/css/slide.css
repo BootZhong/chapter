@@ -1,0 +1,36 @@
+
+*{
+    margin: 0;
+    padding: 0;
+}
+#divz{
+    height: 440px;
+    width: 100%;
+    /*background-color: #c7ddef;*/
+    overflow: hidden
+}
+#div1{
+    width: 1440px;
+    height: 340px;
+    margin: 50px auto;/* 位置为原位置下移100px，左右居中 */
+    position: relative; 
+    overflow: hidden;/*这个属性定义溢出元素内容区的内容会如何处理，这里是隐藏*/
+}
+#div1 ul{
+    position:absolute;/*相对父边框的位置,在这里父边框是div1*/
+    left:0;
+    top:0;
+    overflow: hidden;
+}
+
+#div1 ul li{
+    float: left;/*意义不明*/
+    width: 360px;
+    height: 340px;
+    list-style: none;
+}
+#div1 ul li img{
+    width: 360px;
+    height: 340px;
+}
+

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Upload page</title>
+	<style>
+		.form{
+			margin-top: 50px;
+			text-align: center;
+			font-family: 'montserrat', sans-serif;
+		}
+		.text1{
+			width: 200px;
+			height: 30px;
+			background: rgba(255, 255, 255, 0.5);
+			border-radius: 10px;
+		}
+		.text2{
+			width: 200px;
+			height: 30px;
+			background: rgba(255, 255, 255, 0.5);
+			border-radius: 10px;
+		}
+		.img{
+			 margin-left: 20%;
+		}
+		.submit{
+			width: 120px;
+			height: 40px;
+		}
+	</style>
+</head>
+<body>
+    <form action="client/addProduct" class="form"
+    method="post" enctype="multipart/form-data" onsubmit="return check()">
+		商品名: 					  <input id="name" type="text" name="name" class="text1" /><br /><br />
+		价 &nbsp;&nbsp;&nbsp;格   <input id="price" type="text" name="price" class="text2"/><br /><br />
+		<div class="img">商品图片:  <input id="file" type="file" name="uploadfile" multiple="multiple" /><br /></div><br />
+	
+       
+		    <input type="submit" value="上架商品" class="submit" />
+	</form>
+</body>
+<script>
+	// to check if there is a person and the file is valid
+	function check(){
+		var name = document.getElementById("name").value;
+		var file = document.getElementById("file").value;
+		var price = document.getElementById("price").value;
+		if(name==""){
+			alert("请输入商品 名字");
+			return false;
+		}
+		if(price==""){
+			alert("请输入商品 价格");
+			return false;
+		}
+		if(file.length==0||file==""){
+			alert("请输入商品 图片");
+			return false;
+		}
+		return true;
+	}
+</script>
+</html>
